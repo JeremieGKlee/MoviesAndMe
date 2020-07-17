@@ -4,6 +4,7 @@ import React from 'react'
 import { StyleSheet, View, TextInput, Button, FlatList, Text, ActivityIndicator } from 'react-native'
 import FilmItem from './FilmItem'
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi' // import { } from ... car c'est un export nommé dans TMDBApi.js
+import { connect } from 'react-redux'
 
 class Search extends React.Component {
     constructor(props) {
@@ -25,8 +26,7 @@ class Search extends React.Component {
     _loadFilms() {
         if (this.searchedText.length > 0) { // Seulement si le texte recherché n'est pas vide
             this.setState({ isLoading: true })  // lancement du téléchargement
-            getFilmsFromApiWithSearchedText(this.searchedText,
-              this.page+1).then(data => {
+            getFilmsFromApiWithSearchedText(this.searchedText, this.page+1).then(data => {
                 this.page = data.page
                 this.totalPages = data.total_pages
                 this.setState({
@@ -49,11 +49,10 @@ class Search extends React.Component {
         films :[],
       }, () => {
         // utilisation du paramétre length sur le tableau de film pour vérifier qu'il y a bien 0 film
-      console.log("Page : " + this.page + " / TotalPages : " + this.totalPages +
-       " / Nombre de films : " + this.state.films.length)
+      // console.log("Page : " + this.page + " / TotalPages : " + this.totalPages +
+      //  " / Nombre de films : " + this.state.films.length)
             this._loadFilms()
       })
-      
     }
 
     _displayLoading() {
@@ -68,7 +67,7 @@ class Search extends React.Component {
     }
 
     render() {
-        console.log(this.props)
+        // console.log(this.props)
         return (
         <View style={styles.main_container}>
             <TextInput
@@ -81,12 +80,23 @@ class Search extends React.Component {
             {/* Ici j'ai simplement repris l'exemple sur la documentation de la FlatList */}
             <FlatList
                 data={this.state.films}
+                extraData={this.props.favoritesFilm}
+                // on utilise la prop extraData pour indiquer à la FlatList que d'autres données
+                // doivent être prises en compte si on lui demande de se re rendre
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({item}) => <FilmItem film={item} displayDetailForFilm =
-                {this._displayDetailForFilm} />}
+                renderItem={({item}) => 
+                <FilmItem
+                 film={item}
+                 //Ajout d'une props isFilmFavorite pour indiquer à l'item d'afficher un coeur ou non
+                 isFilmFavorite={(this.props.favoritesFilm.findIndex(film => film.id === item.id) !==
+                  -1) ? true : false}
+                 displayDetailForFilm = {this._displayDetailForFilm}
+                  />
+                }
                 onEndReachedThreshold={0.5}
                 onEndReached={() => {
-                  if (this.page < this.totalPages) { // on verifie qu'on a pas atteint la fin de la pagination (totalPages) avant de charger plus d'éléments
+                  if (this.page < this.totalPages) { // on verifie qu'on a pas atteint la fin
+                  // de la pagination (totalPages) avant de charger plus d'éléments
                     this._loadFilms()
                   }
                 }}
@@ -120,4 +130,12 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Search
+
+// On connecte le store Redux, ainsi que les films favoris du state de notre application, à notre component Search
+const mapStateToProps = state => {
+  return {
+    favoritesFilm: state.favoritesFilm
+  }
+}
+
+export default connect(mapStateToProps)(Search)
