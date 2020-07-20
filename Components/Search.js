@@ -10,24 +10,33 @@ import { connect } from 'react-redux'
 class Search extends React.Component {
     constructor(props) {
         super(props)
-        this.searchedText= "" // Initialisation de notre donnée searchedText en dehors du state
-        this.page = 0 //Coimpteur pour connaître la page courante
-        this.totalPages = 0 // nombre de pages totales pour savoir si on a atteint la fin des retours de l'API TMDB
+        this.searchedText= "" // Initialisation de notre donnée searchedText 
+        // en dehors du state
+        this.page = 0 //Compteur pour connaître la page courante
+        this.totalPages = 0 // nombre de pages totales pour savoir si on a atteint
+        //  la fin des retours de l'API TMDB
+        
         this.state = {
             films:[],
             isLoading: false //par défaut à false tant qu'on lance rien
         }
+        this._loadFilms = this._loadFilms.bind(this)
     }
     
     _loadFilms() {
-        if (this.searchedText.length > 0) { // Seulement si le texte recherché n'est pas vide
+      // console.log("Contenu du test : " +this.test)
+        if (this.searchedText.length > 0) { // Seulement si le texte recherché n'est pas 
+        // vide
               // this.page ++    
               this.setState({ isLoading: true })  // lancement du téléchargement
               getFilmsFromApiWithSearchedText(this.searchedText, this.page+1).then(data => {
                 this.page = data.page
                 this.totalPages = data.total_pages
                 this.setState({
-                    films: [ ...this.state.films, ...data.results ],   // correspond à films: this.state.films.concat(data.results) en non ES6 
+                    //films: [ ...this.state.films, ...data.results ],   // correspond à 
+                    //films: this.state.films.concat(data.results) en non ES6 
+                    films: this.state.films.concat(data.results), // bizarrement cette
+                    // formule sans es6 fonctionne mieux car ne double key enfant
                     isLoading: false // Arrêt du chargement
                 })
             })
@@ -35,30 +44,36 @@ class Search extends React.Component {
     }
 
     _searchTextInputChanged(text) {
-        this.searchedText = text // Modification du texte recherché à chaque saisie de texte, sans passer par le setState comme avant
+        this.searchedText = text // Modification du texte recherché à chaque saisie 
+        //de texte, sans passer par le setState comme avant
     }
 
     _searchFilms() {
-      console.log("searchFilms")
+      // console.log("searchFilms")
       // ici on va remettre à zero les film de notre state
       this.page = 0
       this.totalPages = 0
       this.setState({
         films :[],
       }, () => {
-        // utilisation du paramétre length sur le tableau de film pour vérifier qu'il y a bien 0 film
-      // console.log("Page : " + this.page + " / TotalPages : " + this.totalPages +
-      //  " / Nombre de films : " + this.state.films.length)
+        // utilisation du paramétre length sur le tableau de film pour vérifier
+        // qu'il y a bien 0 film
+      //console.log("Page : " + this.page + " / TotalPages : " + this.totalPages +
+      // " / Nombre de films : " + this.state.films.length)
             this._loadFilms()
       })
     }
+
+
 
     _displayLoading() {
       if (this.state.isLoading) {
         return (
           <View style={styles.loading_container}>
             <ActivityIndicator size='large' />
-            {/* Le component ActivityIndicator possède une propriété size pour définir la taille du visuel de chargement : small ou large. Par défaut size vaut small, on met donc large pour que le chargement soit bien visible */}
+            {/* Le component ActivityIndicator possède une propriété size pour 
+            //définir la taille du visuel de chargement : small ou large. 
+            //Par défaut size vaut small, on met donc large pour que le chargement soit bien visible */}
           </View>
         )
       }
@@ -76,11 +91,27 @@ class Search extends React.Component {
             />
             <Button title='Rechercher' onPress={() => this._searchFilms()}/>
             <FilmList
-              films={this.state.films} // C'est bien le component Search qui récupère les films depuis l'API et on les transmet ici pour que le component FilmList les affiche
-              navigation={this.props.navigation} // Ici on transmet les informations de navigation pour permettre au component FilmList de naviguer vers le détail d'un film
-              loadFilms={this._loadFilms} // _loadFilm charge les films suivants, ça concerne l'API, le component FilmList va juste appeler cette méthode quand l'utilisateur aura parcouru tous les films et c'est le component Search qui lui fournira les films suivants
+              films={this.state.films} // C'est bien le component Search qui récupère
+              //  les films depuis l'API et on les transmet ici pour que le component
+              //  FilmList les affiche
+              navigation={this.props.navigation} // Ici on transmet les informations de
+              //  navigation pour permettre au component FilmList de naviguer vers le
+              //  détail d'un film
+              loadFilms={this._loadFilms} // _loadFilm charge les films suivants, 
+              // ça concerne l'API, le component FilmList va juste appeler cette méthode
+              //  quand l'utilisateur aura parcouru tous les films et c'est le 
+              // component Search qui lui fournira les films suivants
+              
               page={this.page}
-              totalPages={this.totalPages} // les infos page et totalPages vont être utile, côté component FilmList, pour ne pas déclencher l'évènement pour charger plus de film si on a atteint la dernière page
+              totalPages={this.totalPages} // les infos page et totalPages vont être utile,
+              //  côté component FilmList, pour ne pas déclencher l'évènement pour charger
+              //  plus de film si on a atteint la dernière page
+              // test={"props du component FilmList"}
+              favoriteList={false} // ici on ajoute un boléen à false pour indiquer qu'on est pas 
+              //dans le cas de l'affichage de la liste des films favoris et ainsi pouvoir déclancher
+              //le chargement de plus de films lorsque l'user scrolle
+              
+              
             />
             
             {this._displayLoading()}

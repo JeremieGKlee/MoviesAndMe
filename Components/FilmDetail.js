@@ -15,16 +15,36 @@ class FilmDetail extends React.Component {
         }
     }
 
+    // componentDidMount() {
+    //     // console.log("Component FilmDetail monté")
+    //     getFilmDetailFromApi(this.props.route.params.idFilm).then(
+    //         data => {
+    //             this.setState({
+    //                 film: data,
+    //                 isLoading: false
+    //             })
+    //         }
+    //     )
+    // }
+
     componentDidMount() {
-        // console.log("Component FilmDetail monté")
-        getFilmDetailFromApi(this.props.route.params.idFilm).then(
-            data => {
-                this.setState({
-                    film: data,
-                    isLoading: false
-                })
-            }
-        )
+      const favoriteFilmIndex = this.props.favoritesFilm.findIndex(item => item.id === this.props.route.params.idFilm)
+      if (favoriteFilmIndex !== -1) { // Film déjà dans nos favoris, on a déjà son détail
+        // Pas besoin d'appeler l'API ici, on ajoute le détail stocké dans notre state global au state de notre component
+        this.setState({
+          film: this.props.favoritesFilm[favoriteFilmIndex]
+        })
+        return
+      }
+      // Le film n'est pas dans nos favoris, on n'a pas son détail
+      // On appelle l'API pour récupérer son détail
+      this.setState({ isLoading: true })
+      getFilmDetailFromApi(this.props.route.params.idFilm).then(data => {
+        this.setState({
+          film: data,
+          isLoading: false
+        })
+      })
     }
 
     componentDidUpdate() {
@@ -98,7 +118,7 @@ class FilmDetail extends React.Component {
     }
 
     render() {
-        console.log(this.props)
+        // console.log(this.props)
         // console.log("Component FilmDetail rendu")
         // console.log(this.props.route.params.idFilm)
         return(
@@ -156,6 +176,12 @@ const styles = StyleSheet.create({
     },
     favorite_container: {
         alignItems: 'center', // alignement des components enfants sur l'axe secondaire, X
+    },
+
+    favorite_image: {
+      width: 40,
+      height: 40
+
     }
   })
 

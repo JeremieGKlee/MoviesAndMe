@@ -9,6 +9,8 @@ import Search from '../Components/Search'
 import FilmDetail from '../Components/FilmDetail'
 import Favorites from '../Components/Favorites'
 
+import Test from '../Components/Test'
+
 const Stack = createStackNavigator();
 
 export function StackNavigation() {
@@ -27,6 +29,24 @@ export function StackNavigation() {
     );
 }
 
+const FavoritesStack = createStackNavigator();
+
+export function FavoriteStackNavigation() {
+    return (
+      
+        <FavoritesStack.Navigator>
+          <FavoritesStack.Screen name="Favorites"
+           component={Favorites}
+           options={{ title: 'Favoris' }}
+          />
+          <FavoritesStack.Screen name="FilmDetail"
+           component={FilmDetail}
+          />
+        </FavoritesStack.Navigator>
+      
+    );
+}
+
 const Tab = createBottomTabNavigator();
 
 
@@ -40,6 +60,11 @@ export default function Navigation() {
         showLabel: false, // On masque les titres
         showIcon: true // On informe le TabNavigator qu'on souhaite afficher les icônes définis
       }}>
+
+        <Tab.Screen name="Test"
+         component={Test}
+        />
+
         <Tab.Screen name="Search"
          component={StackNavigation}
          options={{ 
@@ -53,7 +78,7 @@ export default function Navigation() {
           }}
         />
         <Tab.Screen name="Favorites"
-         component={Favorites}
+         component={FavoriteStackNavigation}
          options={{
             tabBarIcon: () => {
               return <Image
