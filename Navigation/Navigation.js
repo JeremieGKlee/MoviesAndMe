@@ -9,7 +9,7 @@ import Search from '../Components/Search'
 import FilmDetail from '../Components/FilmDetail'
 import Favorites from '../Components/Favorites'
 
-import Test from '../Components/Test'
+// import Test from '../Components/Test'
 
 const Stack = createStackNavigator();
 
@@ -61,9 +61,9 @@ export default function Navigation() {
         showIcon: true // On informe le TabNavigator qu'on souhaite afficher les icônes définis
       }}>
 
-        <Tab.Screen name="Test"
+        {/* <Tab.Screen name="Test"
          component={Test}
-        />
+        /> */}
 
         <Tab.Screen name="Search"
          component={StackNavigation}

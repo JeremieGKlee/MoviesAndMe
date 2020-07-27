@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity, Share, Platform } from 'react-native'
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity, Share, Platform, Alert, Button } from 'react-native'
 import { getFilmDetailFromApi, getImageFromApi } from '../API/TMDBApi'
 import moment from'moment'
 import numeral from 'numeral'
@@ -15,7 +15,7 @@ class FilmDetail extends React.Component {
       return {
           headerRight: <TouchableOpacity
                           style={styles.share_touchable_headerrightbutton}
-                          onPress={() => params.shareFilm()}>
+                          onPress={() => params._shareFilm()}>
                           <Image
                             style={styles.share_image}
                             source={require('../Images/ic_share.png')} />
@@ -75,10 +75,10 @@ class FilmDetail extends React.Component {
       })
     }
 
-    componentDidUpdate() {
-        console.log("componentDidUpdate : ")
-        console.log(this.props.favoritesFilm)
-    }
+    // componentDidUpdate() {
+    //     console.log("componentDidUpdate : ")
+    //     console.log(this.props.favoritesFilm)
+    // }
     
     _displayLoading() {
         if (this.state.isLoading) {
